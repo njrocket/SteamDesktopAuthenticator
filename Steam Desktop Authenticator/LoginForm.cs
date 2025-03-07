@@ -270,36 +270,9 @@ namespace Steam_Desktop_Authenticator
                     return;
                 }
 
-                InputForm confirmRevocationCode = new InputForm("Please enter your revocation code to ensure you've saved it.");
-                confirmRevocationCode.ShowDialog();
-                if (confirmRevocationCode.txtBox.Text.ToUpper() != linker.LinkedAccount.RevocationCode)
-                {
-                    MessageBox.Show("Revocation code incorrect; the authenticator has not been linked.");
-                    manifest.RemoveAccount(linker.LinkedAccount);
-                    this.Close();
-                    return;
-                }
-
                 string smsCode = smsCodeForm.txtBox.Text;
                 finalizeResponse = await linker.FinalizeAddAuthenticator(smsCode);
-
-                switch (finalizeResponse)
-                {
-                    case AuthenticatorLinker.FinalizeResult.BadSMSCode:
-                        continue;
-
-                    case AuthenticatorLinker.FinalizeResult.UnableToGenerateCorrectCodes:
-                        MessageBox.Show("Unable to generate the proper codes to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: " + linker.LinkedAccount.RevocationCode);
-                        manifest.RemoveAccount(linker.LinkedAccount);
-                        this.Close();
-                        return;
-
-                    case AuthenticatorLinker.FinalizeResult.GeneralFailure:
-                        MessageBox.Show("Unable to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: " + linker.LinkedAccount.RevocationCode);
-                        manifest.RemoveAccount(linker.LinkedAccount);
-                        this.Close();
-                        return;
-                }
+                
             }
 
             //Linked, finally. Re-save with FullyEnrolled property.
